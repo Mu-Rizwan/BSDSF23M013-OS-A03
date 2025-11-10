@@ -13,6 +13,12 @@
 #define MAXARGS 10
 #define ARGLEN 30
 #define PROMPT "FCIT> "
+#define HISTORY_SIZE 20
+
+/* prototypes */
+void add_history_entry(const char* cmd);
+void print_history();
+char* get_history_entry(int idx); /* 1-based index */
 
 /* Function prototypes */
 char* read_cmd(char* prompt, FILE* fp);

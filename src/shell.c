@@ -1,5 +1,38 @@
 #include "shell.h"
 
+/* history storage */
+static char* history_arr[HISTORY_SIZE];
+static int history_count = 0;   /* total commands stored (<= HISTORY_SIZE) */
+static int history_next = 0;    /* index to overwrite next (0..HISTORY_SIZE-1) */
+
+void add_history_entry(const char* cmd) {
+    if (cmd == NULL) return;
+    /* make a copy */
+    char* copy = strdup(cmd);
+    if (!copy) return;
+    /* if existing cell occupied, free it */
+    if (history_arr[history_next] != NULL) free(history_arr[history_next]);
+    history_arr[history_next] = copy;
+    history_next = (history_next + 1) % HISTORY_SIZE;
+    if (history_count < HISTORY_SIZE) history_count++;
+}
+
+void print_history() {
+    int start = (history_count == HISTORY_SIZE) ? history_next : 0;
+    for (int i = 0; i < history_count; i++) {
+        int idx = (start + i) % HISTORY_SIZE;
+        printf("%d %s\n", i + 1, history_arr[idx]);
+    }
+}
+
+char* get_history_entry(int n) {
+    /* n is 1-based index as shown by print_history */
+    if (n < 1 || n > history_count) return NULL;
+    int start = (history_count == HISTORY_SIZE) ? history_next : 0;
+    int idx = (start + (n - 1)) % HISTORY_SIZE;
+    return history_arr[idx]; /* do not free here */
+}
+
 char* read_cmd(char* prompt, FILE* fp) {
     printf("%s", prompt);
     char* cmdline = (char*) malloc(sizeof(char) * MAX_LEN);
