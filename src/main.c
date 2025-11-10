@@ -6,9 +6,12 @@ int main() {
 
     while ((cmdline = read_cmd(PROMPT, stdin)) != NULL) {
         if ((arglist = tokenize(cmdline)) != NULL) {
-            execute(arglist);
+            /* handle builtins first */
+            if (!handle_builtin(arglist)) {
+                execute(arglist);
+            }
 
-            // Free the memory allocated by tokenize()
+            /* Free the memory allocated by tokenize() */
             for (int i = 0; arglist[i] != NULL; i++) {
                 free(arglist[i]);
             }
